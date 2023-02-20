@@ -5,19 +5,24 @@ using UnityEngine;
 public class multijumpPickupBehavior : MonoBehaviour
 {
     public GameBehavior gameManager;
+    public GameObject jumpBoost;
+    public GameObject pickupParent;
+    private Spawner pickupSpawner;
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameBehavior>();
+        pickupSpawner = pickupParent.GetComponent<Spawner>();
     }
 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.name == "Player")
         {
-            Destroy(this.transform.parent.gameObject);
             Debug.Log("Increased jumps by 1");
             gameManager.airJumpCount += 1;
+            pickupSpawner.collected = true;
+            jumpBoost.SetActive(false);
         }
     }
 }

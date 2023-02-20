@@ -145,3 +145,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   platformSpeed: 3
   onscreenDelay: 20
+  Player: {fileID: 4409275325006801754, guid: 5e4b8142f1481234aa7f51d0a53e44ad, type: 3}

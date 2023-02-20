@@ -6,15 +6,25 @@ public class PlatformBehavior : MonoBehaviour
 {
     public float platformSpeed = 3f;
     public float onscreenDelay = 20;
+
     // Start is called before the first frame update
     void Start()
     {
         Destroy(this.gameObject, onscreenDelay);
+
     }
 
     // Update is called once per frame
     void Update()
     {
         this.transform.Translate(Vector3.forward * platformSpeed * Time.deltaTime);
+    }
+
+    void OnCollisionStay(Collision collision) 
+    {
+        if (collision.gameObject.name == "Player")
+        {
+            //Behavior to move player with the platform.
+        }
     }
 }

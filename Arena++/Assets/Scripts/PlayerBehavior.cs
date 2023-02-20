@@ -11,15 +11,21 @@ public class PlayerBehavior : MonoBehaviour
     public float jumpVelocity = 5f;
     public float airJumpVelocity = 6f;
     public float distanceToGround = 0.1f;
-    public float fallMultiplyer = 1.5f;
+    public float standardFallForce = -10f;
+    public float floatyFallForce = -5f;
+    public float decendingForce = 1.5f;
+    public float shortHopMultiplier = 2f;
     public float bufferTime = 0.6f;
     public float coyoteTime = 0.6f;
+    public float knockBack = -2f;
     public LayerMask groundLayer;
+
 
     public Transform mainCamera;
     public GameObject bullet;
     public GameObject platform;
     public float bulletSpeed = 100f;
+
 
     private Vector3 bulletOffSet;
     private Transform position;
@@ -30,7 +36,8 @@ public class PlayerBehavior : MonoBehaviour
     private float vInput;
     private float hInput;
     private float lastJumpTime;
-    private float LastGroundTime;
+    private float lastGroundTime;
+    public float fallSpeed;
     private Rigidbody rb;
     private CapsuleCollider col;
     // Start is called before the first frame update
@@ -46,25 +53,26 @@ public class PlayerBehavior : MonoBehaviour
     void Update()
     {
         lastJumpTime -= Time.deltaTime;
-        LastGroundTime -= Time.deltaTime;
+        lastGroundTime -= Time.deltaTime;
 
         vInput = Input.GetAxis("Vertical") * moveSpeed;
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
 
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        if (Input.GetButtonDown("Jump"))
         {
-            isGroundJumping = true;
-        } else if (Input.GetButtonDown("Jump") && !IsGrounded() && gameManager.airJumpCount > 0)
+            lastJumpTime = bufferTime;
+        
+        if (!IsGrounded() && gameManager.airJumpCount > 0 && lastGroundTime <= 0)
         {
             isAirJumping = true;
         }
         
-        if (Input.GetButtonDown("Jump"))
-        {
-            
         }
-
-
+        
+        if (IsGrounded())
+        {
+            lastGroundTime = coyoteTime;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -80,14 +88,17 @@ public class PlayerBehavior : MonoBehaviour
 
     void FixedUpdate() 
     {
-        if (isGroundJumping)
+
+        if (lastGroundTime >= 0 && lastJumpTime >= 0 && !isGroundJumping)
         {
             lastJumpTime = 0f;
-            isGroundJumping = false;
+            lastGroundTime = 0f;
+            isGroundJumping = true;
             rb.velocity = new Vector3(0, 0, 0);
             rb.AddForce(Vector3.up * jumpVelocity, ForceMode.Impulse);
         }
 
+        
         if (isAirJumping)
         {
             lastJumpTime = 0f;
@@ -97,13 +108,28 @@ public class PlayerBehavior : MonoBehaviour
             rb.AddForce(Vector3.up * airJumpVelocity, ForceMode.Impulse);
         }
 
-        if (rb.velocity.y <= 0 && !IsGrounded())
+        if (rb.velocity.y <= 0)
         {
-            rb.AddForce(Vector3.up * fallMultiplyer);
+            isGroundJumping = false;
+        }
+
+        #region JumpBehavior
+        if (Input.GetButton("Jump") && rb.velocity.y < 0 && !IsGrounded() && lastJumpTime > -0.5f)
+        {
+            fallSpeed = floatyFallForce;
+        } else if (rb.velocity.y <= 0 && !IsGrounded())
+        {
+            fallSpeed = decendingForce;
+
         } else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
         {
-            rb.AddForce(Vector3.up * fallMultiplyer);
+                fallSpeed = decendingForce * shortHopMultiplier;
+        } else
+        {
+            fallSpeed = standardFallForce;
         }
+        #endregion
+
 
         if (isShooting)
         {
@@ -131,6 +157,7 @@ public class PlayerBehavior : MonoBehaviour
         }
 
         #region movement
+        rb.AddForce(Vector3.up * fallSpeed);
         Vector3 rotation = Vector3.up * hInput;
         Quaternion angleRot = Quaternion.Euler(rotation * Time.fixedDeltaTime);
         rb.MovePosition(this.transform.position + this.transform.forward * vInput * Time.fixedDeltaTime);
@@ -145,4 +172,23 @@ public class PlayerBehavior : MonoBehaviour
         return grounded;
     }
 
+    void OnCollisionEnter(Collision collision)
+    {
+        GameObject collidedObject = collision.gameObject;
+
+        if(collidedObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            Debug.Log("PlayerHurt");
+            gameManager.HP -= 1;
+            rb.AddForce(this.transform.forward * knockBack, ForceMode.Impulse);
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.name == "Void")
+        {
+            gameManager.HP = 0;
+        }
+    }
 }
