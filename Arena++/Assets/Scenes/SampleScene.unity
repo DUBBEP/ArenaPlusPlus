@@ -1356,7 +1356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showWinScreen: 0
-  labelText: Collect all 4 items and win your freedom!
+  labelText: Collect all 4 items to complete the stage.
   showLossScreen: 0
   maxItems: 4
   airJumpCount: 0

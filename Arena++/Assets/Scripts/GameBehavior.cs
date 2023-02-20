@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameBehavior : MonoBehaviour
 {
     public bool showWinScreen = false;
-    public string labelText = "Collect all 4 items and win your freedom!";
+    public string labelText = "Collect all 4 items to complete the stage.";
 
     public bool showLossScreen = false;
 
