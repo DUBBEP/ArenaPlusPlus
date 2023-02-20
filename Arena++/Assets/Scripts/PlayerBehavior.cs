@@ -94,7 +94,7 @@ public class PlayerBehavior : MonoBehaviour
             lastJumpTime = 0f;
             lastGroundTime = 0f;
             isGroundJumping = true;
-            rb.velocity = new Vector3(0, 0, 0);
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);            
             rb.AddForce(Vector3.up * jumpVelocity, ForceMode.Impulse);
         }
 
@@ -104,7 +104,7 @@ public class PlayerBehavior : MonoBehaviour
             lastJumpTime = 0f;
             isAirJumping = false;
             gameManager.airJumpCount -= 1;
-            rb.velocity = new Vector3(0, 0, 0);
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
             rb.AddForce(Vector3.up * airJumpVelocity, ForceMode.Impulse);
         }
 
