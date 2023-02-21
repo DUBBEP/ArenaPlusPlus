@@ -165,7 +165,7 @@ public class PlayerBehavior : MonoBehaviour
         #endregion 
     }
 
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         Vector3 capsuleBottom = new Vector3(col.bounds.center.x, col.bounds.min.y, col.bounds.center.z);
         bool grounded = Physics.CheckCapsule(col.bounds.center, capsuleBottom, distanceToGround, groundLayer, QueryTriggerInteraction.Ignore);
