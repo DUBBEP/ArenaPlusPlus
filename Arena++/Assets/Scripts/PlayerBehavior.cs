@@ -29,6 +29,7 @@ public class PlayerBehavior : MonoBehaviour
 
     private Vector3 bulletOffSet;
     private Transform position;
+    private bool playerIsMobile = true;
     private bool isGroundJumping = false;
     private bool isAirJumping = false;
     private bool isShooting = false;
@@ -55,9 +56,12 @@ public class PlayerBehavior : MonoBehaviour
         lastJumpTime -= Time.deltaTime;
         lastGroundTime -= Time.deltaTime;
 
+        if (playerIsMobile)
+        {
         vInput = Input.GetAxis("Vertical") * moveSpeed;
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
-
+        }
+        
         if (Input.GetButtonDown("Jump"))
         {
             lastJumpTime = bufferTime;
@@ -156,13 +160,13 @@ public class PlayerBehavior : MonoBehaviour
             firePlatform = false;
         }
 
-        #region movement
-        rb.AddForce(Vector3.up * fallSpeed);
-        Vector3 rotation = Vector3.up * hInput;
-        Quaternion angleRot = Quaternion.Euler(rotation * Time.fixedDeltaTime);
-        rb.MovePosition(this.transform.position + this.transform.forward * vInput * Time.fixedDeltaTime);
-        rb.MoveRotation(rb.rotation * angleRot);
-        #endregion 
+            #region movement
+            rb.AddForce(Vector3.up * fallSpeed);
+            Vector3 rotation = Vector3.up * hInput;
+            Quaternion angleRot = Quaternion.Euler(rotation * Time.fixedDeltaTime);
+            rb.MovePosition(this.transform.position + this.transform.forward * vInput * Time.fixedDeltaTime);
+            rb.MoveRotation(rb.rotation * angleRot);
+            #endregion
     }
 
     public bool IsGrounded()
@@ -180,8 +184,16 @@ public class PlayerBehavior : MonoBehaviour
         {
             Debug.Log("PlayerHurt");
             gameManager.HP -= 1;
+            rb.velocity = new Vector3(0f, 0f, 0f);
             rb.AddForce(this.transform.forward * knockBack, ForceMode.Impulse);
+            //pauseControls();
+            //For later. Function should render the player imobile for a brief moment when they are knocked backwards.
         }
+    }
+
+    private void pauseControls(float inactivePeriod)
+    {
+        //should disable controls for the "inactivePeriod" before returning control to the user.
     }
 
     void OnTriggerEnter(Collider other)
