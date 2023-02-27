@@ -31,7 +31,7 @@ public class PlatformBehavior : MonoBehaviour
         {
             Quaternion travelDirection = Quaternion.AngleAxis(platformAngle, Vector3.up);
             Vector3 forceDirection = travelDirection * Vector3.forward;
-            playerRB.velocity = forceDirection.normalized * platformSpeed * 1.09f;
+            playerRB.velocity = forceDirection.normalized * platformSpeed * 1.055f;
         }
     }
 }
