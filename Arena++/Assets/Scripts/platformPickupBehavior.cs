@@ -15,13 +15,13 @@ public class platformPickupBehavior : MonoBehaviour
         pickupSpawner = pickupParent.GetComponent<Spawner>();
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.name == "Player" && gameManager.platformsRemaining < 3)
         {
             Debug.Log("Platforms Armed");
             gameManager.platformTrigger = true;
-            gameManager.platformsRemaining +=3;
+            gameManager.platformsRemaining += 3 - gameManager.platformsRemaining;
             pickupSpawner.collected = true;
             platform.SetActive(false);
         }

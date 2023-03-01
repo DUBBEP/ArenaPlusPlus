@@ -17,7 +17,7 @@ public class PlayerBehavior : MonoBehaviour
     public float shortHopMultiplier = 2f;
     public float bufferTime = 0.6f;
     public float coyoteTime = 0.6f;
-    public float knockBack = -2f;
+    public float knockBack = 2f;
     public LayerMask groundLayer;
 
 
@@ -29,11 +29,13 @@ public class PlayerBehavior : MonoBehaviour
 
     private Vector3 bulletOffSet;
     private Transform position;
-    private bool playerIsMobile = true;
+    public bool playerIsMobile = true;
     private bool isGroundJumping = false;
     private bool isAirJumping = false;
     private bool isShooting = false;
     private bool firePlatform = false;
+    private bool flippingCharacter = false;
+    private float turnWindow;
     private float vInput;
     private float hInput;
     private float lastJumpTime;
@@ -55,21 +57,36 @@ public class PlayerBehavior : MonoBehaviour
     {
         lastJumpTime -= Time.deltaTime;
         lastGroundTime -= Time.deltaTime;
+        turnWindow -= Time.deltaTime;
 
         if (playerIsMobile)
         {
         vInput = Input.GetAxis("Vertical") * moveSpeed;
-        hInput = Input.GetAxis("Horizontal") * rotateSpeed;
         }
         
+        hInput = Input.GetAxis("Horizontal") * rotateSpeed;
+
+        if (Input.GetKeyUp(KeyCode.S) && turnWindow < 0)
+        {
+            turnWindow = 0.095f;
+        }
+
+        if (turnWindow >= 0)
+        {
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                flippingCharacter = true;
+            }
+        }
+
         if (Input.GetButtonDown("Jump"))
         {
             lastJumpTime = bufferTime;
         
-        if (!IsGrounded() && gameManager.airJumpCount > 0 && lastGroundTime <= 0)
-        {
-            isAirJumping = true;
-        }
+            if (!IsGrounded() && gameManager.airJumpCount > 0 && lastGroundTime <= 0)
+            {
+                isAirJumping = true;
+            }
         
         }
         
@@ -166,6 +183,12 @@ public class PlayerBehavior : MonoBehaviour
             Quaternion angleRot = Quaternion.Euler(rotation * Time.fixedDeltaTime);
             rb.MovePosition(this.transform.position + this.transform.forward * vInput * Time.fixedDeltaTime);
             rb.MoveRotation(rb.rotation * angleRot);
+
+            if (flippingCharacter)
+            {
+                rb.MoveRotation(rb.rotation * Quaternion.Euler(0, 180, 0));
+                flippingCharacter = false;
+            }
             #endregion
     }
 
@@ -185,7 +208,10 @@ public class PlayerBehavior : MonoBehaviour
             Debug.Log("PlayerHurt");
             gameManager.HP -= 1;
             rb.velocity = new Vector3(0f, 0f, 0f);
-            rb.AddForce(this.transform.forward * knockBack, ForceMode.Impulse);
+            float enemyAngle = collision.gameObject.transform.eulerAngles.y;
+            Quaternion forceDirection = Quaternion.AngleAxis(enemyAngle, Vector3.up);
+            Vector3 forceVector = forceDirection * Vector3.forward + forceDirection * Vector3.up;
+            rb.AddForce(forceVector * knockBack, ForceMode.Impulse);
             //pauseControls();
             //For later. Function should render the player imobile for a brief moment when they are knocked backwards.
         }

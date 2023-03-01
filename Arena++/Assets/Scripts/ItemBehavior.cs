@@ -10,7 +10,7 @@ public class ItemBehavior : MonoBehaviour
     {
       gameManager = GameObject.Find("GameManager").GetComponent<GameBehavior>();
     }
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider collision)
     {
       if (collision.gameObject.name == "Player") 
       {

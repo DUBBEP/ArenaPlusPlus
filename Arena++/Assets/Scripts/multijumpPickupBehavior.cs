@@ -15,9 +15,9 @@ public class multijumpPickupBehavior : MonoBehaviour
         pickupSpawner = pickupParent.GetComponent<Spawner>();
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.name == "Player" && gameManager.airJumpCount < 3)
         {
             Debug.Log("Increased jumps by 1");
             gameManager.airJumpCount += 1;
