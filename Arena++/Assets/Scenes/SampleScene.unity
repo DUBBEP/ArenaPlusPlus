@@ -9682,7 +9682,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8325742283502480247, guid: 5e4b8142f1481234aa7f51d0a53e44ad, type: 3}
       propertyPath: camOffset.z
-      value: -4
+      value: -5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e4b8142f1481234aa7f51d0a53e44ad, type: 3}

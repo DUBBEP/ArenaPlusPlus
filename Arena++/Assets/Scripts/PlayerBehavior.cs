@@ -28,6 +28,7 @@ public class PlayerBehavior : MonoBehaviour
 
 
     private Vector3 bulletOffSet;
+    private Vector3 horizontalVelocity;
     private Transform position;
     public bool playerIsMobile = true;
     private bool isGroundJumping = false;
@@ -35,6 +36,7 @@ public class PlayerBehavior : MonoBehaviour
     private bool isShooting = false;
     private bool firePlatform = false;
     private bool flippingCharacter = false;
+    private bool airDrag = false;
     private float turnWindow;
     private float vInput;
     private float hInput;
@@ -66,9 +68,21 @@ public class PlayerBehavior : MonoBehaviour
         
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
 
+        if (!IsGrounded() && !(vInput == 0))
+        {
+            horizontalVelocity = Vector3.ProjectOnPlane(rb.velocity, Vector3.up);
+            if (horizontalVelocity.magnitude > moveSpeed)
+            {
+                airDrag = true;
+            }
+        } else
+        {
+            airDrag = false;
+        }
+
         if (Input.GetKeyUp(KeyCode.S) && turnWindow < 0)
         {
-            turnWindow = 0.095f;
+            turnWindow = 0.098f;
         }
 
         if (turnWindow >= 0)
@@ -109,6 +123,20 @@ public class PlayerBehavior : MonoBehaviour
 
     void FixedUpdate() 
     {
+        if (airDrag && horizontalVelocity.magnitude > 0f)
+        {
+            Vector3 xdrag = rb.velocity;
+            xdrag.x *= 0.97f;
+            rb.velocity = xdrag;
+            Vector3 zdrag = rb.velocity;
+            zdrag.z *= 0.97f;
+            rb.velocity = zdrag;            
+            Debug.Log("Decreasing velocity");
+        } else
+        {
+            airDrag = false;
+        }
+
 
         if (lastGroundTime >= 0 && lastJumpTime >= 0 && !isGroundJumping)
         {
