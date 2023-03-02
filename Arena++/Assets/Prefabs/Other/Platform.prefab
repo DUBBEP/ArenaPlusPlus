@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   platformSpeed: 5
-  onscreenDelay: 20
+  onscreenDelay: 10
 --- !u!54 &-5520332711654315629
 Rigidbody:
   m_ObjectHideFlags: 0

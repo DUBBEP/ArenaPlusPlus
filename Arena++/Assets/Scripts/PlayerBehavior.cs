@@ -131,7 +131,6 @@ public class PlayerBehavior : MonoBehaviour
             Vector3 zdrag = rb.velocity;
             zdrag.z *= 0.97f;
             rb.velocity = zdrag;            
-            Debug.Log("Decreasing velocity");
         } else
         {
             airDrag = false;

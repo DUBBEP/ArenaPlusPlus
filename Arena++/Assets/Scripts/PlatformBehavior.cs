@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlatformBehavior : MonoBehaviour
 {
     public float platformSpeed = 3f;
-    public float onscreenDelay = 10f;
+    public float onscreenDelay = 5f;
     private float platformAngle;
     private Rigidbody playerRB;
     private PlayerBehavior playerScript; 
