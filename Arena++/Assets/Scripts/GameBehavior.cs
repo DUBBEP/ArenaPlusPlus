@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 public class GameBehavior : MonoBehaviour
 {
     public bool showWinScreen = false;
-    public string labelText = "Collect all 4 items to complete the stage.";
+    public string labelText = "Collect all 6 items to complete the stage.";
 
     public bool showLossScreen = false;
 
-    public int maxItems = 4;
+    public int maxItems = 6;
     private int _itemsCollected = 0;
 
     public int airJumpCount = 0;

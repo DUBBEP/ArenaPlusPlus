@@ -18,6 +18,9 @@ public class PlayerBehavior : MonoBehaviour
     public float bufferTime = 0.6f;
     public float coyoteTime = 0.6f;
     public float knockBack = 2f;
+    public int standardFallCap = -30;
+    public int gravityMultiplyer = 6;
+    public int lowFallCap = -10;
     public LayerMask groundLayer;
 
 
@@ -41,8 +44,11 @@ public class PlayerBehavior : MonoBehaviour
     private float vInput;
     private float hInput;
     private float lastJumpTime;
+    private float currentFallSpeed;
     private float lastGroundTime;
     public float fallSpeed;
+    private float downTime;
+    private int fallCap;
     private Rigidbody rb;
     private CapsuleCollider col;
     // Start is called before the first frame update
@@ -52,6 +58,7 @@ public class PlayerBehavior : MonoBehaviour
         col = GetComponent<CapsuleCollider>();
         position = GameObject.Find("Player").transform;   
         gameManager = GameObject.Find("GameManager").GetComponent<GameBehavior>();
+        fallCap = standardFallCap;
     }
 
     // Update is called once per frame
@@ -61,9 +68,20 @@ public class PlayerBehavior : MonoBehaviour
         lastGroundTime -= Time.deltaTime;
         turnWindow -= Time.deltaTime;
 
+        currentFallSpeed = rb.velocity.y;
+
         if (playerIsMobile)
         {
         vInput = Input.GetAxis("Vertical") * moveSpeed;
+        }
+
+        if (!playerIsMobile)
+        {
+            downTime -= Time.deltaTime;            
+            if (downTime <= 0)
+            {
+                playerIsMobile = true;
+            }
         }
         
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
@@ -123,7 +141,7 @@ public class PlayerBehavior : MonoBehaviour
 
     void FixedUpdate() 
     {
-        if (airDrag && horizontalVelocity.magnitude > 0f)
+        if (airDrag && horizontalVelocity.magnitude > 0f && playerIsMobile)
         {
             Vector3 xdrag = rb.velocity;
             xdrag.x *= 0.97f;
@@ -175,6 +193,13 @@ public class PlayerBehavior : MonoBehaviour
         } else
         {
             fallSpeed = standardFallForce;
+        }
+
+        if (rb.velocity.y <= fallCap)
+        {
+            Vector3 yVelocity = rb.velocity;
+            yVelocity.y = fallCap;
+            rb.velocity = yVelocity;
         }
         #endregion
 
@@ -234,26 +259,56 @@ public class PlayerBehavior : MonoBehaviour
         {
             Debug.Log("PlayerHurt");
             gameManager.HP -= 1;
+            playerIsMobile = false;
+            downTime = 0.2f;  
+            float enemyAngle = collision.gameObject.transform.eulerAngles.y;    
+            if (Input.GetAxis("Vertical") == 1)
+            {
+                rb.AddForce(GetForceVector(2f, enemyAngle) * knockBack, ForceMode.Impulse);  
+            } else 
+            {
+                rb.AddForce(GetForceVector(1f, enemyAngle) * knockBack, ForceMode.Impulse);  
+            }
             rb.velocity = new Vector3(0f, 0f, 0f);
-            float enemyAngle = collision.gameObject.transform.eulerAngles.y;
-            Quaternion forceDirection = Quaternion.AngleAxis(enemyAngle, Vector3.up);
-            Vector3 forceVector = forceDirection * Vector3.forward + forceDirection * Vector3.up;
-            rb.AddForce(forceVector * knockBack, ForceMode.Impulse);
-            //pauseControls();
-            //For later. Function should render the player imobile for a brief moment when they are knocked backwards.
+            // Quaternion forceDirection = Quaternion.AngleAxis(enemyAngle, Vector3.up);
+            // Vector3 forceVector = forceDirection * Vector3.forward + forceDirection * Vector3.up;
+            // rb.AddForce(forceVector * knockBack, ForceMode.Impulse);
         }
     }
 
-    private void pauseControls(float inactivePeriod)
+    Vector3 GetForceVector(float verticalMultiplyer, float angle)
     {
-        //should disable controls for the "inactivePeriod" before returning control to the user.
+        rb.velocity = new Vector3(0f, 0f, 0f);
+        Quaternion forceDirection = Quaternion.AngleAxis(angle, Vector3.up);
+        Vector3 forceVector = forceDirection * Vector3.forward * verticalMultiplyer + forceDirection * Vector3.up;
+        return forceVector;
     }
 
     void OnTriggerEnter(Collider other)
     {
+
         if(other.name == "Void")
         {
             gameManager.HP = 0;
         }
+        if(other.name == "LowGravityField")
+        {
+            Debug.Log("Gravity Reduced");
+            standardFallForce /= gravityMultiplyer;
+            decendingForce /= gravityMultiplyer + 2;
+            fallCap = lowFallCap;
+        }
     }
+
+    void OnTriggerExit(Collider other)
+    {
+        if(other.name == "LowGravityField")
+        {
+            Debug.Log("Gravity Returned to normal");
+            standardFallForce *= gravityMultiplyer;
+            decendingForce *= gravityMultiplyer + 2;    
+            fallCap = standardFallCap;        
+        }
+    }
+
 }
