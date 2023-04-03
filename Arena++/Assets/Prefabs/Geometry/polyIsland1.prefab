@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 845490341029954459}
   - component: {fileID: 126677772913686393}
   - component: {fileID: 6965398294215161040}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: pSphere1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

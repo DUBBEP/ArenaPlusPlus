@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 3342210880223188533}
   - component: {fileID: 2822256521732299806}
   - component: {fileID: 3634348806149182370}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: pasted__pasted__pSphere1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

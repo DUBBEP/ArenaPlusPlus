@@ -47,7 +47,7 @@ public class PlayerBehavior : MonoBehaviour
     private float currentFallSpeed;
     private float lastGroundTime;
     public float fallSpeed;
-    private float downTime;
+    public float downTime;
     private int fallCap;
     private Rigidbody rb;
     private CapsuleCollider col;
@@ -310,5 +310,4 @@ public class PlayerBehavior : MonoBehaviour
             fallCap = standardFallCap;        
         }
     }
-
 }
