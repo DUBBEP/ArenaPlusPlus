@@ -7,6 +7,8 @@ using TMPro;
 
 public class GameBehavior : MonoBehaviour
 {
+    [SerializeField] GameObject DefeateUI;
+
     public RawImage platformIcon;
     public TextMeshProUGUI platCountDisplay;
     public TextMeshProUGUI healthDisplay;
@@ -73,7 +75,7 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    void RestartLevel()
+    public void RestartLevel()
     {
         SceneManager.LoadScene("GameScene");
         Time.timeScale = 1.0f;
@@ -139,10 +141,7 @@ public class GameBehavior : MonoBehaviour
 
         if (showLossScreen)
         {
-            if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "You lose..."))
-            {
-                RestartLevel();
-            }
+            DefeateUI.SetActive(true);
         }
     }
 }

@@ -23,6 +23,7 @@ public class PlayerBehavior : MonoBehaviour
     public int lowFallCap = -10;
     public LayerMask groundLayer;
 
+    public float trailEnableSpeed = 20f;
 
     public Transform mainCamera;
     public GameObject bullet;
@@ -51,6 +52,8 @@ public class PlayerBehavior : MonoBehaviour
     private int fallCap;
     private Rigidbody rb;
     private CapsuleCollider col;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -72,18 +75,18 @@ public class PlayerBehavior : MonoBehaviour
 
         if (playerIsMobile)
         {
-        vInput = Input.GetAxis("Vertical") * moveSpeed;
+            vInput = Input.GetAxis("Vertical") * moveSpeed;
         }
 
         if (!playerIsMobile)
         {
-            downTime -= Time.deltaTime;            
+            downTime -= Time.deltaTime;
             if (downTime <= 0)
             {
                 playerIsMobile = true;
             }
         }
-        
+
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
 
         if (!IsGrounded() && !(vInput == 0))
@@ -93,7 +96,8 @@ public class PlayerBehavior : MonoBehaviour
             {
                 airDrag = true;
             }
-        } else
+        }
+        else
         {
             airDrag = false;
         }
@@ -114,14 +118,14 @@ public class PlayerBehavior : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             lastJumpTime = bufferTime;
-        
+
             if (!IsGrounded() && gameManager.airJumpCount > 0 && lastGroundTime <= 0)
             {
                 isAirJumping = true;
             }
-        
+
         }
-        
+
         if (IsGrounded())
         {
             lastGroundTime = coyoteTime;
@@ -132,11 +136,25 @@ public class PlayerBehavior : MonoBehaviour
             isShooting = true;
         }
 
-        if (gameManager.platformTrigger && Input.GetMouseButtonDown(1) && !IsGrounded() )
+        if (gameManager.platformTrigger && Input.GetMouseButtonDown(1) && !IsGrounded())
         {
             firePlatform = true;
         }
 
+
+        if (rb.velocity.magnitude > trailEnableSpeed)
+        {
+            GetComponent<TrailRenderer>().time = 0.5f;
+            GetComponent<TrailRenderer>().enabled = true;
+        }
+        else
+        {
+            GetComponent<TrailRenderer>().time -= Time.deltaTime;
+            if (GetComponent<TrailRenderer>().time <= 0)
+            {
+                GetComponent<TrailRenderer>().enabled = false;
+            }
+        }
     }
 
     void FixedUpdate() 
