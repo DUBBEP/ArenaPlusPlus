@@ -257,6 +257,7 @@ public class PlayerBehavior : MonoBehaviour
 
         if(collidedObject.layer == LayerMask.NameToLayer("Enemy"))
         {
+            GetComponent<AudioSource>().Play();
             Debug.Log("PlayerHurt");
             gameManager.HP -= 1;
             playerIsMobile = false;

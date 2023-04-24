@@ -28,7 +28,11 @@ public class EnemyBehavior : MonoBehaviour
 
             if (_lives <= 0)
             {
-                Destroy(this.gameObject);
+                Destroy(this.gameObject, 5f);
+                GetComponent<NavMeshAgent>().enabled = false;
+                GetComponent<Rigidbody>().freezeRotation = false;
+                GetComponent<Rigidbody>().constraints &= ~RigidbodyConstraints.FreezePosition;
+                GetComponent<Rigidbody>().AddForce(Vector3.forward * 200f);
                 Debug.Log("Enemy down.");
             }
         }
@@ -44,19 +48,20 @@ public class EnemyBehavior : MonoBehaviour
 
     void Update()
     {
-        if (agent.remainingDistance < 0.2f && !agent.pathPending)
-        {
-            MoveToNextPatrolLocation();
-        }
-        
-        if (hitFlash >= 0)
-        {
-            rend.material = flashMat;
-            hitFlash -= Time.deltaTime;
-        } else if (hitFlash <= 0)
-        {
-            rend.material = enemyMat;
-        }
+            if (agent.remainingDistance < 0.2f && !agent.pathPending)
+            {
+                MoveToNextPatrolLocation();
+            }
+
+            if (hitFlash >= 0)
+            {
+                rend.material = flashMat;
+                hitFlash -= Time.deltaTime;
+            }
+            else if (hitFlash <= 0)
+            {
+                rend.material = enemyMat;
+            }
     }
 
     void InitializePatrolRoute() 
@@ -105,9 +110,11 @@ public class EnemyBehavior : MonoBehaviour
     {
         if (collision.gameObject.name == "Bullet(Clone)")
         {
+            GetComponent<AudioSource>().Play();
             EnemyLives -= 1;
             Debug.Log("Critical hit!");
             hitFlash = 0.2f;
+
         }
     
     }
