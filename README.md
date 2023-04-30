@@ -1,7 +1,4 @@
 # Move++
-Create a custom arena for the HeroBorn game
- 
-Added more locations for the player to explore. Refined and added interactions between players and enemies.
 
 Controls
 
