@@ -1,6 +1,4 @@
-# Move++
-
-Controls
+# Controls
 
 Rotate Camera: A/D
 
